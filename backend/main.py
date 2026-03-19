@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from twilio.rest import Client
 
 from backend.config import get_settings
-from database import engine as db_engine, Base
+from backend.database import engine as db_engine, Base
 from core.feature_store import FeatureStore
 from core.rule_engine import RuleEngine
 from core.ml_engine import MLEngine
