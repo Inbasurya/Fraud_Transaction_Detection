@@ -1,0 +1,426 @@
+/* ═══════════════════════════════════════════════════════════════
+   SOC Dashboard Theme — Dark cyber-ops aesthetic
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --soc-bg:       #030712;
+  --soc-surface:  #0b1120;
+  --soc-card:     #111827;
+  --soc-border:   #1f2937;
+  --soc-text:     #f3f4f6;
+  --soc-muted:    #8ca0bf;
+  --soc-accent:   #6be8ff;
+  --soc-safe:     #53e2a1;
+  --soc-warn:     #f6c667;
+  --soc-danger:   #ff5f8f;
+  /* shorthand aliases used in inline styles */
+  --accent:       var(--soc-accent);
+  --muted:        var(--soc-muted);
+  --kpi:          var(--soc-accent);
+}
+
+/* ── Shell layout ─────────────────────────────────────────────── */
+
+.soc-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--soc-bg);
+  color: var(--soc-text);
+}
+
+/* ── Header ───────────────────────────────────────────────────── */
+
+.soc-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(11, 17, 32, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--soc-border);
+}
+
+.soc-header h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.soc-header p {
+  font-size: 0.7rem;
+  color: var(--soc-muted);
+  margin: 0;
+}
+
+.soc-metrics-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* ── Navigation ───────────────────────────────────────────────── */
+
+.soc-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  padding: 0.35rem 1rem;
+  background: var(--soc-surface);
+  border-bottom: 1px solid var(--soc-border);
+  overflow-x: auto;
+}
+
+.soc-nav-link {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.72rem;
+  color: var(--soc-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.soc-nav-link:hover {
+  background: rgba(107, 232, 255, 0.07);
+  color: var(--soc-text);
+}
+
+.soc-nav-link.active {
+  background: rgba(107, 232, 255, 0.12);
+  color: var(--soc-accent);
+  font-weight: 600;
+}
+
+/* ── Main content ─────────────────────────────────────────────── */
+
+.soc-main {
+  flex: 1;
+  padding: 1rem 1.25rem;
+}
+
+/* ── Grid layouts ─────────────────────────────────────────────── */
+
+.soc-grid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.soc-grid-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.8rem;
+}
+
+/* Investigation page two-column layout */
+.soc-grid.investigation-layout {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 768px) {
+  .soc-grid.investigation-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Cards ────────────────────────────────────────────────────── */
+
+.soc-card {
+  background: var(--soc-card);
+  border: 1px solid var(--soc-border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+}
+
+.soc-card h2 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  color: var(--soc-text);
+}
+
+.soc-card.chart-card {
+  padding-bottom: 0.5rem;
+}
+
+.soc-card.table-card {
+  overflow: hidden;
+}
+
+/* KPI cards */
+.soc-card.kpi {
+  position: relative;
+  overflow: hidden;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--kpi);
+}
+
+.soc-card.kpi span {
+  font-size: 0.68rem;
+  color: var(--soc-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.soc-card.kpi h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0.15rem 0 0;
+  color: var(--soc-text);
+}
+
+.soc-card.kpi.danger  { --kpi: var(--soc-danger); }
+.soc-card.kpi.warn    { --kpi: var(--soc-warn);   }
+.soc-card.kpi.accent  { --kpi: var(--soc-accent);  }
+.soc-card.kpi.neutral { --kpi: var(--soc-muted);   }
+
+/* ── Pills / badges ──────────────────────────────────────────── */
+
+.soc-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--soc-border);
+  color: var(--soc-muted);
+  white-space: nowrap;
+}
+
+/* WebSocket status pills */
+.soc-pill.soc-pill-connected    { color: var(--soc-safe);   border-color: rgba(83, 226, 161, 0.3); }
+.soc-pill.soc-pill-connecting   { color: var(--soc-warn);   border-color: rgba(246, 198, 103, 0.3); }
+.soc-pill.soc-pill-disconnected { color: var(--soc-danger); border-color: rgba(255, 95, 143, 0.3); }
+.soc-pill.soc-pill-error        { color: var(--soc-danger); border-color: rgba(255, 95, 143, 0.3); }
+
+/* Engine status pills */
+.soc-pill.status-green  { color: var(--soc-safe);   border-color: rgba(83, 226, 161, 0.3); }
+.soc-pill.status-yellow { color: var(--soc-warn);   border-color: rgba(246, 198, 103, 0.3); }
+.soc-pill.status-red    { color: var(--soc-danger); border-color: rgba(255, 95, 143, 0.3); }
+.soc-pill.status-ok     { color: var(--soc-safe);   border-color: rgba(83, 226, 161, 0.3); }
+
+/* Risk badges (inline in tables) */
+.risk-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.risk-badge.safe       { background: rgba(83, 226, 161, 0.15); color: var(--soc-safe); }
+.risk-badge.suspicious { background: rgba(246, 198, 103, 0.15); color: var(--soc-warn); }
+.risk-badge.fraud      { background: rgba(255, 95, 143, 0.15); color: var(--soc-danger); }
+
+/* ── Tables ───────────────────────────────────────────────────── */
+
+.soc-table-wrap {
+  overflow-x: auto;
+}
+
+.soc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.soc-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.soc-table th {
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--soc-muted);
+  background: var(--soc-surface);
+  border-bottom: 1px solid var(--soc-border);
+}
+
+.soc-table td {
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.5);
+  color: var(--soc-text);
+}
+
+.soc-table tbody tr {
+  transition: background 0.12s;
+}
+
+.soc-table tbody tr:hover {
+  background: rgba(107, 232, 255, 0.04);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+
+.soc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--soc-accent);
+  background: transparent;
+  border: 1px solid rgba(107, 232, 255, 0.25);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.soc-btn:hover {
+  background: rgba(107, 232, 255, 0.08);
+  border-color: rgba(107, 232, 255, 0.45);
+}
+
+.soc-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Form inputs ──────────────────────────────────────────────── */
+
+.soc-input {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--soc-text);
+  background: var(--soc-surface);
+  border: 1px solid var(--soc-border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.12s;
+}
+
+.soc-input:focus {
+  border-color: rgba(107, 232, 255, 0.45);
+}
+
+.soc-input option {
+  background: var(--soc-card);
+  color: var(--soc-text);
+}
+
+/* ── Modals ───────────────────────────────────────────────────── */
+
+.soc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.soc-modal-card {
+  width: 90%;
+  max-width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--soc-card);
+  border: 1px solid var(--soc-border);
+  border-radius: 12px;
+  padding: 1.2rem 1.4rem;
+}
+
+/* ── Panel head (flex header in modals/cards) ─────────────────── */
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.panel-head h2 {
+  margin: 0;
+}
+
+/* ── Glassmorphism helper ─────────────────────────────────────── */
+
+.glass-sm {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+/* ── Glow shadows ─────────────────────────────────────────────── */
+
+.shadow-glow-blue {
+  box-shadow: 0 0 12px rgba(107, 232, 255, 0.3);
+}
+
+/* ── Error boundary ───────────────────────────────────────────── */
+
+.soc-error-boundary {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.soc-error-boundary h2 {
+  font-size: 1.1rem;
+  color: var(--soc-danger);
+  margin-bottom: 0.5rem;
+}
+
+.soc-error-boundary p {
+  color: var(--soc-muted);
+  font-size: 0.82rem;
+}
+
+/* ── Empty-state helper ───────────────────────────────────────── */
+
+.soc-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--soc-muted);
+  font-size: 0.82rem;
+}
+
+/* ── Recharts tooltip theme override ──────────────────────────── */
+
+.recharts-default-tooltip {
+  background: var(--soc-card) !important;
+  border: 1px solid var(--soc-border) !important;
+  border-radius: 6px !important;
+  font-size: 0.72rem !important;
+}
+
+/* ── Scrollbar for card overflow ──────────────────────────────── */
+
+.soc-card ::-webkit-scrollbar { width: 5px; height: 5px; }
+.soc-card ::-webkit-scrollbar-thumb { background: var(--soc-border); border-radius: 3px; }
+
+/* ── Kanban columns (CaseManagement) ──────────────────────────── */
+
+.kanban-col {
+  background: var(--soc-surface);
+  border: 1px solid var(--soc-border);
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+.kanban-col h3 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--soc-muted);
+  margin: 0 0 0.5rem;
+}

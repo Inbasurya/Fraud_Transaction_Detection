@@ -1,0 +1,4 @@
+model,accuracy,precision,recall,f1_score,roc_auc,cv_best_score,threshold
+Logistic Regression,0.99875,1.0,0.96875,0.984127,1.0,1.0,0.8234
+Random Forest,0.9995,1.0,0.9875,0.993711,1.0,1.0,1.0
+Hybrid Ensemble,1.0,1.0,1.0,1.0,1.0,,0.5

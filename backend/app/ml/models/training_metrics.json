@@ -1,0 +1,322 @@
+{
+  "dataset": {
+    "rows": 20000,
+    "fraud_samples": 800,
+    "non_fraud_samples": 19200,
+    "fraud_ratio": 0.04,
+    "features_used": [
+      "amount",
+      "user_avg_amount",
+      "transaction_amount_over_user_avg",
+      "transaction_frequency_last_24h",
+      "location_change_flag",
+      "device_change_flag",
+      "merchant_risk_score",
+      "time_since_last_transaction",
+      "unusual_time_flag",
+      "transaction_hour",
+      "merchant_frequency",
+      "amount_deviation"
+    ],
+    "correlation_dropped": [],
+    "selected_best_model": "Random Forest",
+    "outliers_removed": 246,
+    "class_imbalance_strategy": "SMOTE"
+  },
+  "models": {
+    "Logistic Regression": {
+      "accuracy": 0.99875,
+      "precision": 1.0,
+      "recall": 0.96875,
+      "f1_score": 0.984127,
+      "roc_auc": 1.0,
+      "threshold": 0.8234,
+      "confusion_matrix": [
+        [
+          3840,
+          0
+        ],
+        [
+          5,
+          155
+        ]
+      ],
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.01875,
+          1.0,
+          1.0
+        ]
+      },
+      "feature_importance": [
+        {
+          "feature": "amount",
+          "importance": 0.599148
+        },
+        {
+          "feature": "transaction_amount_over_user_avg",
+          "importance": 0.248109
+        },
+        {
+          "feature": "amount_deviation",
+          "importance": 0.101363
+        },
+        {
+          "feature": "time_since_last_transaction",
+          "importance": 0.015985
+        },
+        {
+          "feature": "user_avg_amount",
+          "importance": 0.007093
+        },
+        {
+          "feature": "merchant_risk_score",
+          "importance": 0.006668
+        },
+        {
+          "feature": "device_change_flag",
+          "importance": 0.005282
+        },
+        {
+          "feature": "unusual_time_flag",
+          "importance": 0.005031
+        },
+        {
+          "feature": "location_change_flag",
+          "importance": 0.004376
+        },
+        {
+          "feature": "merchant_frequency",
+          "importance": 0.003636
+        },
+        {
+          "feature": "transaction_hour",
+          "importance": 0.002796
+        },
+        {
+          "feature": "transaction_frequency_last_24h",
+          "importance": 0.000514
+        }
+      ],
+      "cv_best_score": 1.0,
+      "cv_results": {
+        "best_params": {
+          "solver": "lbfgs",
+          "C": 0.1
+        },
+        "best_cv_score": 1.0
+      }
+    },
+    "Random Forest": {
+      "accuracy": 0.9995,
+      "precision": 1.0,
+      "recall": 0.9875,
+      "f1_score": 0.993711,
+      "roc_auc": 1.0,
+      "threshold": 1.0,
+      "confusion_matrix": [
+        [
+          3840,
+          0
+        ],
+        [
+          2,
+          158
+        ]
+      ],
+      "roc_curve": {
+        "fpr": [
+          0.0,
+          0.0,
+          0.0,
+          0.000521,
+          0.001302,
+          0.005208,
+          0.005469,
+          0.00651,
+          0.007031,
+          0.008333,
+          0.008854,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          0.9875,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "feature_importance": [
+        {
+          "feature": "amount",
+          "importance": 0.776743
+        },
+        {
+          "feature": "transaction_amount_over_user_avg",
+          "importance": 0.189255
+        },
+        {
+          "feature": "amount_deviation",
+          "importance": 0.032618
+        },
+        {
+          "feature": "user_avg_amount",
+          "importance": 0.001048
+        },
+        {
+          "feature": "unusual_time_flag",
+          "importance": 0.000334
+        },
+        {
+          "feature": "merchant_frequency",
+          "importance": 1e-06
+        },
+        {
+          "feature": "transaction_frequency_last_24h",
+          "importance": 0.0
+        },
+        {
+          "feature": "location_change_flag",
+          "importance": 0.0
+        },
+        {
+          "feature": "device_change_flag",
+          "importance": 0.0
+        },
+        {
+          "feature": "merchant_risk_score",
+          "importance": 0.0
+        },
+        {
+          "feature": "time_since_last_transaction",
+          "importance": 0.0
+        },
+        {
+          "feature": "transaction_hour",
+          "importance": 0.0
+        }
+      ],
+      "cv_best_score": 1.0,
+      "cv_results": {
+        "best_params": {
+          "n_estimators": 200,
+          "min_samples_split": 8,
+          "min_samples_leaf": 4,
+          "max_features": 0.8,
+          "max_depth": 12
+        },
+        "best_cv_score": 1.0
+      }
+    }
+  },
+  "best_model": "Random Forest",
+  "ensemble": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "roc_auc": 1.0,
+    "threshold": 0.5,
+    "confusion_matrix": [
+      [
+        3840,
+        0
+      ],
+      [
+        0,
+        160
+      ]
+    ],
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.00625,
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "feature_importance": [
+    {
+      "feature": "amount",
+      "importance": 0.776743
+    },
+    {
+      "feature": "transaction_amount_over_user_avg",
+      "importance": 0.189255
+    },
+    {
+      "feature": "amount_deviation",
+      "importance": 0.032618
+    },
+    {
+      "feature": "user_avg_amount",
+      "importance": 0.001048
+    },
+    {
+      "feature": "unusual_time_flag",
+      "importance": 0.000334
+    },
+    {
+      "feature": "merchant_frequency",
+      "importance": 1e-06
+    },
+    {
+      "feature": "transaction_frequency_last_24h",
+      "importance": 0.0
+    },
+    {
+      "feature": "location_change_flag",
+      "importance": 0.0
+    },
+    {
+      "feature": "device_change_flag",
+      "importance": 0.0
+    },
+    {
+      "feature": "merchant_risk_score",
+      "importance": 0.0
+    }
+  ],
+  "artifacts": {
+    "model_path": "/Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/backend/app/ml/models/fraud_model.pkl",
+    "scaler_path": "/Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/backend/app/ml/models/scaler.pkl",
+    "anomaly_model_path": "/Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/backend/app/ml/models/anomaly_model.pkl",
+    "roc_curve_path": "/Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/results/fraud_model_roc_curve.png",
+    "confusion_matrix_path": "/Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/results/fraud_model_confusion_matrix.png",
+    "shap_plot_path": "/Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/results/fraud_model_shap_importance.png"
+  },
+  "model_status": {
+    "XGBoost": "unavailable: missing OpenMP runtime or xgboost import failed",
+    "LightGBM": "unavailable: lightgbm not installed",
+    "Logistic Regression": "trained",
+    "Random Forest": "trained"
+  },
+  "ensemble_weights": {
+    "Random Forest": 0.45,
+    "XGBoost": 0.0,
+    "Logistic Regression": 0.35,
+    "Anomaly Detection": 0.2
+  }
+}

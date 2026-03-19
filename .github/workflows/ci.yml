@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:6-alpine
+        ports:
+          - 6379:6379
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: fraud_db
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+        
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov httpx
+        
+    - name: Run Pytest
+      run: |
+        cd backend
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
+        pytest tests/ --cov=core --cov=routers --cov=auth --cov-report=xml
+        
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: "18"
+        
+    - name: Install dependencies and build
+      run: |
+        cd frontend
+        npm ci
+        npm run build

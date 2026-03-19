@@ -1,0 +1,82 @@
+# Virtual Environments
+venv/
+venv_mac/
+venv311/
+.venv/
+env/
+ENV/
+backend/venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# ML models & large data files
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.pb
+*.onnx
+*.safetensors
+ml_models/*.pkl
+ml_models/*.joblib
+backend/ml_models/
+backend/app/ml/data/*.csv
+backend/app/ml/data/*.parquet
+data/*.csv
+data/*.parquet
+
+# Large binary / compiled files
+*.dll
+*.dylib
+*.so
+*.lib
+
+# SQLite databases & WAL files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Docker volumes
+pgdata/
