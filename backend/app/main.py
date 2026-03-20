@@ -9,6 +9,7 @@ background ``asyncio.Task`` with exponential back-off capped at 60 s.
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import Any, Dict
 from datetime import datetime
 
@@ -31,10 +32,19 @@ logger = get_logger(__name__)
 
 # Limiter is imported from app.core.limiter to allow usage in routers
 
+# Configure logging level based on environment
+logging.basicConfig(
+    level=logging.WARNING if settings.ENVIRONMENT == "production" else logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+
 app = FastAPI(
     title="AI-Powered Real-Time Fraud Monitoring API",
-    version="4.0.0",
+    version=settings.APP_VERSION,
     description="Production-grade fraud detection with graceful degradation",
+    # Disable interactive docs in production for security
+    docs_url="/docs" if settings.DEBUG else None,
+    redoc_url="/redoc" if settings.DEBUG else None,
 )
 
 # Register Limiter
@@ -77,13 +87,7 @@ async def monitoring_startup():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5174",
-    ],
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origins=[o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -118,13 +122,32 @@ async def connect_database() -> None:
 
 
 async def init_redis() -> None:
-    """Verify Redis connectivity with a PING."""
+    """Verify Redis connectivity with retries — tolerates Render's slow Redis cold-start."""
     import redis as redis_lib
 
-    client = redis_lib.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=2)
-    client.ping()
-    client.close()
-    logger.info("redis_connected", extra={"url": settings.REDIS_URL})
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            client = redis_lib.Redis.from_url(
+                settings.REDIS_URL,
+                socket_connect_timeout=5,
+                socket_timeout=5,
+            )
+            client.ping()
+            client.close()
+            logger.info("redis_connected", extra={"url": settings.REDIS_URL})
+            return
+        except Exception as exc:
+            wait = 2 ** attempt  # 1 s, 2 s, 4 s, 8 s, 16 s
+            logger.warning(
+                "redis_connect_attempt_failed",
+                extra={"attempt": attempt + 1, "max": max_retries,
+                       "error": str(exc), "retry_in_s": wait},
+            )
+            if attempt < max_retries - 1:
+                await asyncio.sleep(wait)
+
+    raise ConnectionError(f"Redis unavailable after {max_retries} attempts")
 
 
 async def start_kafka_consumers() -> None:
@@ -143,7 +166,12 @@ async def start_kafka_consumers() -> None:
 
 async def load_ml_models() -> None:
     """Load the ML model via the three-tier registry."""
+    from scripts.ensure_model import load_or_train_model
     from app.ml_models.model_registry import load_model
+
+    # Guarantee the local .pkl exists before the registry attempts tier-2 load.
+    # On Render cold deploys the file is absent (not committed); this trains it.
+    load_or_train_model()
 
     model, source = load_model()
     _component_status["model"]["source"] = source
@@ -321,14 +349,16 @@ async def shutdown_event() -> None:
 
 @app.get("/health")
 async def health_check():
-    """Production health check endpoint"""
+    """Production health check — always returns HTTP 200 so Render never restarts healthy pods."""
     health_data = {
         "status": "ok",
+        "service": "FraudGuard API",
+        "version": settings.APP_VERSION,
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "2.0.0",
+        "environment": settings.ENVIRONMENT,
         "components": {}
     }
-    
+
     # Check Redis
     redis_status = {"status": "degraded"}
     try:
@@ -343,14 +373,14 @@ async def health_check():
         redis_status = {"status": "error", "error": str(e)}
         health_data["status"] = "degraded"
     health_data["components"]["redis"] = redis_status
-    
+
     # Check ML model
     model_status = {"status": "degraded"}
     try:
         model_version = "XGBoost_v2.0"
         if redis_conn:
             model_version = await redis_conn.get("metrics:model_version") or "XGBoost_v2.0"
-        
+
         model_status = {
             "status": "ok",
             "version": model_version,
@@ -360,7 +390,7 @@ async def health_check():
         model_status = {"status": "error", "error": str(e)}
         health_data["status"] = "degraded"
     health_data["components"]["ml_model"] = model_status
-    
+
     # Check database
     db_status = {"status": "degraded"}
     try:
@@ -373,22 +403,24 @@ async def health_check():
         db_status = {"status": "error", "error": str(e)}
         health_data["status"] = "degraded"
     health_data["components"]["database"] = db_status
-    
-    # System metrics
-    psi = await calculate_live_psi()
-    fraud_rate = await get_fraud_rate()
-    
-    health_data["metrics"] = {
-        "fraud_rate_pct": fraud_rate,
-        "model_psi": psi,
-        "model_health": (
-            "stable" if psi < 0.1 else 
-            "monitor" if psi < 0.2 else 
-            "retrain_needed"
-        ),
-        "uptime_pct": 99.97
-    }
-    
+
+    # System metrics — wrapped so Redis issues never make /health return 500
+    try:
+        psi = await calculate_live_psi()
+        fraud_rate = await get_fraud_rate()
+        health_data["metrics"] = {
+            "fraud_rate_pct": fraud_rate,
+            "model_psi": psi,
+            "model_health": (
+                "stable" if psi < 0.1 else
+                "monitor" if psi < 0.2 else
+                "retrain_needed"
+            ),
+            "uptime_pct": 99.97
+        }
+    except Exception:
+        health_data["metrics"] = {}
+
     return health_data
 
 

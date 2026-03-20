@@ -33,6 +33,7 @@ dist/
 ml_models/*.pkl
 ml_models/*.joblib
 backend/ml_models/
+!backend/ml_models/.gitkeep
 backend/app/ml/data/*.csv
 backend/app/ml/data/*.parquet
 data/*.csv
@@ -80,3 +81,18 @@ htmlcov/
 
 # Docker volumes
 pgdata/
+
+# Node
+node_modules/
+frontend/.env.local
+
+# ML model binaries
+*.model
+ml_models/
+!ml_models/.gitkeep
+!ml_models/README.md
+
+# Allow non-secret env files to be committed
+!frontend/.env.production
+!frontend/.env.development
+!backend/.env.example

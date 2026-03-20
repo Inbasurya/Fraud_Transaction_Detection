@@ -12,11 +12,12 @@ Usage:
 import time
 import random
 import math
+import os
 import requests
 from datetime import datetime, timedelta
 from typing import Optional
 
-API_URL = "http://localhost:8000/transaction/simulate"
+API_URL = os.getenv("API_URL", "http://localhost:8000/transaction/simulate")
 
 MERCHANTS = [
     "Amazon", "Flipkart", "Walmart", "Uber", "Netflix",

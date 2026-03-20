@@ -11,6 +11,7 @@ Usage:
 """
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -19,7 +20,7 @@ import pandas as pd
 import requests
 
 DEFAULT_CSV = Path(__file__).resolve().parent / "bank_transactions_20000.csv"
-API_URL = "http://localhost:8000/transaction/simulate"
+API_URL = os.getenv("API_URL", "http://localhost:8000/transaction/simulate")
 
 
 def stream(csv_path: str, api_url: str, rate: float):

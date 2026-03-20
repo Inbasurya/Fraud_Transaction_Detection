@@ -6,16 +6,10 @@ import type {
   CustomerProfile,
   NetworkData,
 } from "../types";
+import { API_URL, WS_URL } from "../config";
 
-// Dynamic host: works on localhost AND network IPs like 10.185.29.154
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-export const API_BASE = isLocalhost
-  ? (import.meta.env.VITE_API_URL || 'http://localhost:8000')
-  : `http://${window.location.hostname}:8000`
-
-export const WS_BASE = isLocalhost
-  ? 'ws://localhost:8000'
-  : `ws://${window.location.hostname}:8000`
+export const API_BASE = API_URL
+export const WS_BASE = WS_URL
 
 const API = axios.create({
   baseURL: API_BASE,

@@ -9,11 +9,13 @@ class Settings(BaseSettings):
     APP_NAME: str = "AI Real-Time Fraud Monitoring System"
     APP_VERSION: str = "4.0.0"
     APP_ENV: str = "development"
+    ENVIRONMENT: str = "development"
+    DEBUG: bool = False
 
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/frauddb"
-    DATABASE_URL_SYNC: str = "postgresql://postgres:postgres@localhost:5432/frauddb"
-    POSTGRES_URI: str = "postgresql://postgres:postgres@localhost:5432/frauddb"
+    # Database — default to SQLite for local dev; set DATABASE_URL on Render for PostgreSQL
+    DATABASE_URL: str = "sqlite:///./frauddb.sqlite"
+    DATABASE_URL_SYNC: str = "sqlite:///./frauddb.sqlite"
+    POSTGRES_URI: str = "sqlite:///./frauddb.sqlite"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -28,8 +30,9 @@ class Settings(BaseSettings):
     MLFLOW_TRACKING_URI: str = "http://localhost:5000"
     MLFLOW_EXPERIMENT_NAME: str = "fraud-detection"
 
-    # ML Model
-    MODEL_LOCAL_PATH: str = "models/fraud_model.pkl"
+    # ML Model — path used by model_registry tier-2 local load
+    # ensure_model.py trains and saves here if file is missing (Render cold deploys)
+    MODEL_LOCAL_PATH: str = "ml_models/xgboost_fraud_model.pkl"
     MODEL_RETRAIN_INTERVAL_HOURS: int = 24
     MODEL_RETRAIN_MIN_NEW_LABELS: int = 25
     MODEL_RETRAIN_ENABLED: bool = True
@@ -39,9 +42,12 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # Security
-    SECRET_KEY: str = "supersecretkey"
+    SECRET_KEY: str = "change-this-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
+    # CORS — set to Render frontend URL in production (comma-separated)
+    ALLOWED_ORIGINS: str = "http://localhost:5173"
 
     # Twilio SMS
     TWILIO_ACCOUNT_SID: str = ""

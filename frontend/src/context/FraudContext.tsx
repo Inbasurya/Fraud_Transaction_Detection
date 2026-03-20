@@ -1,11 +1,9 @@
 import { createContext, useContext, useMemo, useEffect, ReactNode } from 'react'
 import { useWebSocket, Transaction, Stats } from '../hooks/useWebSocket'
 import { API_BASE } from '../services/api'
+import { WS_URL as WS_BASE } from '../config'
 
-// Dynamic host: works on localhost AND network IPs like 10.185.29.154
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-const WS_HOST = isLocalhost ? 'localhost:8000' : `${window.location.hostname}:8000`
-const WS_URL = `ws://${WS_HOST}/ws/transactions`
+const WS_URL = `${WS_BASE}/ws/transactions`
 
 export interface AlertItem {
   id: string

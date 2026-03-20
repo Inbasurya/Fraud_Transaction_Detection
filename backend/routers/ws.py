@@ -47,7 +47,9 @@ _initialized = False
 async def init_ml_pipeline():
     global _redis, _feature_eng, _ml_engine, _rule_engine, _behavioral_engine, _graph_engine, _risk_scorer, _initialized
     try:
-        _redis = aioredis.from_url("redis://localhost:6379", decode_responses=False)
+        from backend.config import get_settings as _get_settings
+        _settings = _get_settings()
+        _redis = aioredis.from_url(_settings.REDIS_URL, decode_responses=False)
         await _redis.ping()
         _feature_eng = FeatureEngineer(_redis)
         
