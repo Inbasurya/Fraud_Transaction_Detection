@@ -1,6 +1,12 @@
-import networkx as nx
 from collections import Counter
 import logging
+
+try:
+    import networkx as nx
+    NETWORKX_AVAILABLE = True
+except ImportError:
+    nx = None
+    NETWORKX_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,8 +20,11 @@ def build_transaction_graph(transactions):
         transactions: List of transaction records (dicts).
 
     Returns:
-        A NetworkX graph.
+        A NetworkX graph or None if networkx unavailable.
     """
+    if not NETWORKX_AVAILABLE:
+        logger.warning("networkx not available — graph features disabled")
+        return None
     logger.info("Building transaction graph...")
     G = nx.DiGraph()
 
@@ -115,7 +124,11 @@ def analyze_transactions(transactions):
     Returns:
         Dictionary with graph, user features, and suspicious nodes.
     """
+    if not NETWORKX_AVAILABLE:
+        return {"graph": None, "user_graph_features": {}, "suspicious_nodes": []}
     G = build_transaction_graph(transactions)
+    if G is None:
+        return {"graph": None, "user_graph_features": {}, "suspicious_nodes": []}
     user_graph_features = compute_user_graph_features(G)
     suspicious_nodes = detect_suspicious_patterns(G)
 

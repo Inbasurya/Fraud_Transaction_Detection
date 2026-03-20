@@ -2,16 +2,25 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from hashlib import md5
 from time import monotonic
 from typing import Any
 
-import networkx as nx
+try:
+    import networkx as nx
+    NETWORKX_AVAILABLE = True
+except ImportError:
+    nx = None
+    NETWORKX_AVAILABLE = False
+
 from sqlalchemy.orm import Session
 
 from app.models.transaction_model import Transaction
 from app.models.fraud_prediction_model import FraudPrediction
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -36,7 +45,10 @@ def _tx_ip(tx: Transaction) -> str:
     return _synthetic_ip(tx.user_id, tx.location or "UNK", tx.device_type or "UNK")
 
 
-def _build_graph(db: Session, limit: int = 2000) -> nx.Graph:
+def _build_graph(db: Session, limit: int = 2000) -> "nx.Graph | None":
+    if not NETWORKX_AVAILABLE:
+        logger.warning("networkx not available — graph features disabled")
+        return None
     g = nx.Graph()
     rows = (
         db.query(Transaction, FraudPrediction.risk_score, FraudPrediction.risk_category)
@@ -105,6 +117,8 @@ def _communities(g: nx.Graph) -> list[set[str]]:
 
 def fraud_network_payload(db: Session, limit: int = 2000, use_cache: bool = True) -> dict[str, Any]:
     global _NETWORK_CACHE
+    if not NETWORKX_AVAILABLE:
+        return {"nodes": [], "edges": [], "community_count": 0, "cluster_labels": {}, "fraud_rings": [], "graph_metrics": {}}
     now = monotonic()
     if use_cache and _NETWORK_CACHE and (now - _NETWORK_CACHE.ts) < 8:
         return _NETWORK_CACHE.payload

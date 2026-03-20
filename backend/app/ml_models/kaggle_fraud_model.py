@@ -13,11 +13,18 @@ import tempfile
 import joblib
 import numpy as np
 import pandas as pd
-from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.base import clone
 from sklearn.ensemble import IsolationForest, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+
+# SMOTE may fail with certain imbalanced-learn versions
+try:
+    from imblearn.over_sampling import SMOTE
+    SMOTE_AVAILABLE = True
+except (ImportError, AttributeError):
+    SMOTE = None
+    SMOTE_AVAILABLE = False
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -366,13 +373,20 @@ class KaggleFraudModel:
 
     def _rebalance(self, x_train: pd.DataFrame, y_train: pd.Series) -> tuple[pd.DataFrame, pd.Series, str]:
         minority_count = int(y_train.sum())
-        if minority_count >= 6:
-            sampler = SMOTE(random_state=42, k_neighbors=min(5, minority_count - 1))
-            method = "SMOTE"
+        if minority_count >= 6 and SMOTE_AVAILABLE:
+            try:
+                sampler = SMOTE(random_state=42, k_neighbors=min(5, minority_count - 1))
+                x_resampled, y_resampled = sampler.fit_resample(x_train, y_train)
+                method = "SMOTE"
+            except Exception as e:
+                logger.warning(f"SMOTE failed: {e} — using RandomUnderSampler")
+                sampler = RandomUnderSampler(random_state=42)
+                x_resampled, y_resampled = sampler.fit_resample(x_train, y_train)
+                method = "RandomUnderSampler"
         else:
             sampler = RandomUnderSampler(random_state=42)
+            x_resampled, y_resampled = sampler.fit_resample(x_train, y_train)
             method = "RandomUnderSampler"
-        x_resampled, y_resampled = sampler.fit_resample(x_train, y_train)
         return pd.DataFrame(x_resampled, columns=x_train.columns), pd.Series(y_resampled), method
 
     def _candidate_models(self) -> dict[str, tuple[Any | None, dict[str, list[Any]] | None]]:

@@ -18,7 +18,13 @@ import logging
 from collections import defaultdict
 from typing import Optional
 
-import networkx as nx
+try:
+    import networkx as nx
+    NETWORKX_AVAILABLE = True
+except ImportError:
+    nx = None
+    NETWORKX_AVAILABLE = False
+
 from sqlalchemy.orm import Session
 
 from app.models.transaction_model import Transaction

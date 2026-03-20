@@ -11,7 +11,13 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-import networkx as nx
+try:
+    import networkx as nx
+    NETWORKX_AVAILABLE = True
+except ImportError:
+    nx = None
+    NETWORKX_AVAILABLE = False
+
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -21,12 +27,15 @@ from app.models.fraud_prediction_model import FraudPrediction
 logger = logging.getLogger(__name__)
 
 
-def _build_graph(db: Session, limit: int = 2000) -> nx.Graph:
+def _build_graph(db: Session, limit: int = 2000) -> "nx.Graph | None":
     """Build a transaction graph from recent transactions.
 
     Nodes: user IDs, merchants, devices, locations
     Edges: transactions linking them
     """
+    if not NETWORKX_AVAILABLE:
+        logger.warning("networkx not available — graph features disabled")
+        return None
     G = nx.Graph()
 
     rows = (
@@ -98,7 +107,11 @@ def _build_graph(db: Session, limit: int = 2000) -> nx.Graph:
 
 def detect_fraud_clusters(db: Session, min_risk: float = 0.4) -> list[dict[str, Any]]:
     """Detect fraud clusters — connected components where avg risk exceeds threshold."""
+    if not NETWORKX_AVAILABLE:
+        return []
     G = _build_graph(db)
+    if G is None:
+        return []
 
     clusters = []
     for component in nx.connected_components(G):
@@ -136,7 +149,11 @@ def detect_fraud_clusters(db: Session, min_risk: float = 0.4) -> list[dict[str, 
 
 def detect_device_rings(db: Session) -> list[dict[str, Any]]:
     """Find devices shared by multiple users — potential fraud rings."""
+    if not NETWORKX_AVAILABLE:
+        return []
     G = _build_graph(db)
+    if G is None:
+        return []
     rings = []
 
     device_nodes = [n for n in G.nodes if G.nodes[n].get("type") == "device"]
@@ -160,7 +177,11 @@ def detect_device_rings(db: Session) -> list[dict[str, Any]]:
 
 def get_graph_data(db: Session, limit: int = 500) -> dict[str, Any]:
     """Return graph data (nodes + edges) for frontend force-graph visualization."""
+    if not NETWORKX_AVAILABLE:
+        return {"nodes": [], "edges": [], "node_count": 0, "edge_count": 0}
     G = _build_graph(db, limit=limit)
+    if G is None:
+        return {"nodes": [], "edges": [], "node_count": 0, "edge_count": 0}
 
     nodes = []
     for n, data in G.nodes(data=True):

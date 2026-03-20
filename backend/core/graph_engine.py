@@ -9,7 +9,12 @@ Edges are transaction relationships.
 import logging
 from typing import Any
 
-import networkx as nx
+try:
+    import networkx as nx
+    NETWORKX_AVAILABLE = True
+except ImportError:
+    nx = None
+    NETWORKX_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
