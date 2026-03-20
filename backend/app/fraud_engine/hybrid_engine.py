@@ -19,8 +19,8 @@ from app.ml_models.kaggle_fraud_model import kaggle_model
 from app.services.rule_engine import evaluate_rules
 from app.analytics.fraud_network_service import transaction_cluster_risk
 
-from backend.core.scoring import ScoringEngine, classify_risk
-from backend.core.device_scorer import get_device_score
+from core.scoring import ScoringEngine, classify_risk
+from core.device_scorer import get_device_score
 
 logger = logging.getLogger(__name__)
 

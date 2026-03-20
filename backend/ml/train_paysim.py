@@ -154,24 +154,24 @@ def train():
 def _log_to_mlflow(name, model, X_test, y_test, y_proba, flavor):
     try:
         import mlflow
-
-        tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5001")
-        mlflow.set_tracking_uri(tracking_uri)
-        mlflow.set_experiment("fraud-detection")
-
-        with mlflow.start_run(run_name=name):
-            mlflow.log_params(model.get_params())
-            mlflow.log_metric("roc_auc", roc_auc_score(y_test, y_proba))
-            mlflow.log_metric("pr_auc", average_precision_score(y_test, y_proba))
-
-            if flavor == "xgboost":
-                mlflow.xgboost.log_model(model, "model", registered_model_name=name)
-            elif flavor == "lightgbm":
-                mlflow.lightgbm.log_model(model, "model", registered_model_name=name)
-
-        logger.info("Logged %s to MLflow", name)
-    except Exception as exc:
-        logger.warning("MLflow logging failed: %s", exc)
+        mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", ""))
+        MLFLOW_AVAILABLE = True
+    except ImportError:
+        MLFLOW_AVAILABLE = False
+    if MLFLOW_AVAILABLE:
+        try:
+            mlflow.set_experiment("fraud-detection")
+            with mlflow.start_run(run_name=name):
+                mlflow.log_params(model.get_params())
+                mlflow.log_metric("roc_auc", roc_auc_score(y_test, y_proba))
+                mlflow.log_metric("pr_auc", average_precision_score(y_test, y_proba))
+                if flavor == "xgboost":
+                    mlflow.xgboost.log_model(model, "model", registered_model_name=name)
+                elif flavor == "lightgbm":
+                    mlflow.lightgbm.log_model(model, "model", registered_model_name=name)
+            logger.info("Logged %s to MLflow", name)
+        except Exception as exc:
+            logger.warning("MLflow logging failed: %s", exc)
 
 
 if __name__ == "__main__":

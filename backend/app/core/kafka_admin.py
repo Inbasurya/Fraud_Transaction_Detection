@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from typing import Dict, List
 
-from app.core.config import settings
+from core.config import settings
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)

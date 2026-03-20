@@ -8,10 +8,10 @@ import logging
 import threading
 from typing import Any
 
-from app.config import settings
-from app.database import SessionLocal
-from app.models.transaction_model import Transaction
-from app.services import fraud_service
+from config import settings
+from database import SessionLocal
+from models.transaction_model import Transaction
+from services import fraud_service
 
 logger = logging.getLogger(__name__)
 

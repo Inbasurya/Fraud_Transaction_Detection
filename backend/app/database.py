@@ -12,7 +12,7 @@ from typing import AsyncGenerator, Generator
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
-from backend.config import settings
+from config import settings
 
 logger = logging.getLogger(__name__)
 

@@ -50,9 +50,12 @@ class ModelRegistry:
             return self._mlflow_client
         try:
             import mlflow
-            mlflow.set_tracking_uri(settings.MLFLOW_TRACKING_URI)
+            mlflow.set_tracking_uri(getattr(settings, "MLFLOW_TRACKING_URI", ""))
             self._mlflow_client = mlflow.MlflowClient()
             return self._mlflow_client
+        except ImportError:
+            logger.warning("MLflow not installed; skipping MLflow integration.")
+            return None
         except Exception as exc:
             logger.warning("MLflow unavailable: %s", exc)
             return None
@@ -78,7 +81,7 @@ class ModelRegistry:
 
         # Fallback to local model
         try:
-            from app.ml_models.kaggle_fraud_model import fraud_model
+            from ml_models.kaggle_fraud_model import fraud_model
             if fraud_model and fraud_model.rf_model is not None:
                 self.champion = ModelVersion(
                     name="local-ensemble",

@@ -131,24 +131,26 @@ def train():
             pickle.dump(model, f)
         logger.info("Saved ml_models/fraud_ieee_xgb.pkl")
 
-        # MLflow
+        # MLflow (optional)
         try:
             import mlflow
-
-            tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5001")
-            mlflow.set_tracking_uri(tracking_uri)
-            mlflow.set_experiment("fraud-detection-ieee")
-
-            with mlflow.start_run(run_name="ieee-xgb"):
-                mlflow.log_params(model.get_params())
-                mlflow.log_metric("roc_auc", roc_auc_score(y_test, y_proba))
-                mlflow.log_metric("pr_auc", average_precision_score(y_test, y_proba))
-                mlflow.xgboost.log_model(
-                    model, "model", registered_model_name="fraud-ieee-xgb"
-                )
-            logger.info("Logged IEEE model to MLflow")
-        except Exception as exc:
-            logger.warning("MLflow logging failed: %s", exc)
+            mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", ""))
+            MLFLOW_AVAILABLE = True
+        except ImportError:
+            MLFLOW_AVAILABLE = False
+        if MLFLOW_AVAILABLE:
+            try:
+                mlflow.set_experiment("fraud-detection-ieee")
+                with mlflow.start_run(run_name="ieee-xgb"):
+                    mlflow.log_params(model.get_params())
+                    mlflow.log_metric("roc_auc", roc_auc_score(y_test, y_proba))
+                    mlflow.log_metric("pr_auc", average_precision_score(y_test, y_proba))
+                    mlflow.xgboost.log_model(
+                        model, "model", registered_model_name="fraud-ieee-xgb"
+                    )
+                logger.info("Logged IEEE model to MLflow")
+            except Exception as exc:
+                logger.warning("MLflow logging failed: %s", exc)
 
     except ImportError:
         logger.error("xgboost not installed")

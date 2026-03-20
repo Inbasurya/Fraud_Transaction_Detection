@@ -248,21 +248,26 @@ async def startup_event() -> None:
             asyncio.create_task(_retry_component("kafka", start_kafka_consumers))
         )
 
-    # Step 4 — mlflow connectivity check (lightweight)
-    try:
-        import httpx
+    # Step 4 — mlflow connectivity check (lightweight, optional)
+    mlflow_uri = getattr(settings, "MLFLOW_TRACKING_URI", "")
+    if mlflow_uri and mlflow_uri not in ("", "http://localhost:5001"):
+        try:
+            import httpx
 
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            resp = await client.get(f"{settings.MLFLOW_TRACKING_URI}/api/2.0/mlflow/experiments/search")
-            if resp.status_code < 500:
-                _component_status["mlflow"] = {"status": "ok"}
-            else:
-                raise ConnectionError(f"MLflow returned {resp.status_code}")
-    except Exception as exc:
-        logger.error("startup_step_failed",
-                      extra={"step": "mlflow", "error": str(exc)})
-        _component_status["mlflow"] = {"status": "degraded",
-                                        "detail": str(exc)[:200]}
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(f"{mlflow_uri}/api/2.0/mlflow/experiments/search")
+                if resp.status_code < 500:
+                    _component_status["mlflow"] = {"status": "ok"}
+                else:
+                    raise ConnectionError(f"MLflow returned {resp.status_code}")
+        except Exception as exc:
+            logger.warning("mlflow_connectivity_skipped",
+                          extra={"step": "mlflow", "error": str(exc)[:200]})
+            _component_status["mlflow"] = {"status": "disabled",
+                                            "detail": "MLflow not configured or unavailable"}
+    else:
+        _component_status["mlflow"] = {"status": "disabled",
+                                        "detail": "MLflow not configured"}
 
     # Step 5 — load ML model
     try:

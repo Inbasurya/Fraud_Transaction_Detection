@@ -25,3 +25,5 @@ passlib>=1.7.4
 python-jose>=3.3.0
 aiokafka>=0.10.0
 slowapi==0.1.9
+imbalanced-learn==0.12.3
+confluent-kafka==2.3.0

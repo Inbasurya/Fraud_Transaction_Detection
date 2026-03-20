@@ -3,8 +3,15 @@ import numpy as np
 from typing import Optional
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from imblearn.over_sampling import SMOTE
 import logging
+
+# Optional: imblearn may not be installed on all environments
+try:
+    from imblearn.over_sampling import SMOTE
+    IMBLEARN_AVAILABLE = True
+except ImportError:
+    IMBLEARN_AVAILABLE = False
+    SMOTE = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -47,7 +54,11 @@ def scale_features(df: pd.DataFrame, scaler: Optional[StandardScaler] = None) ->
     return df, scaler
 
 def handle_class_imbalance(X: pd.DataFrame, y: pd.Series) -> (pd.DataFrame, pd.Series):
-    """Apply SMOTE to balance the classes."""
+    """Apply SMOTE to balance the classes if imblearn is available."""
+    if not IMBLEARN_AVAILABLE:
+        logging.warning("imblearn not installed — skipping SMOTE resampling")
+        return X, y.astype(int)
+
     logging.info("Handling class imbalance...")
     sm = SMOTE(random_state=42)
 
