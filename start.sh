@@ -77,6 +77,12 @@ done
 # ─── 6) Run Alembic migrations ───────────────────────────────
 log "Running database migrations…"
 cd backend
+if [ -d "../venv_mac" ]; then
+    source ../venv_mac/bin/activate
+elif [ -d "../venv311" ]; then
+    source ../venv311/bin/activate
+fi
+
 if command -v alembic >/dev/null 2>&1; then
     alembic upgrade head 2>&1 || warn "Alembic migration failed (may already be applied)"
     ok "Database migrations applied"
@@ -106,7 +112,13 @@ fi
 # ─── 9) Start backend ────────────────────────────────────────
 log "Starting FastAPI backend on port 8000…"
 cd "$DIR"
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload &
+if [ -d "venv_mac" ]; then
+    source venv_mac/bin/activate
+elif [ -d "venv311" ]; then
+    source venv311/bin/activate
+fi
+export PYTHONPATH="$DIR/backend"
+cd backend && uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
 BACKEND_PID=$!
 ok "Backend started (PID: $BACKEND_PID)"
 

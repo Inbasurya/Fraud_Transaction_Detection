@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/mlruns/709330111546524387/3145f4753f3a4bea8de753b5f59c9d48/artifacts
+end_time: 1776654101648
+entry_point_name: ''
+experiment_id: '709330111546524387'
+lifecycle_stage: active
+run_id: 3145f4753f3a4bea8de753b5f59c9d48
+run_name: fraud-xgb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1776654099275
+status: 3
+tags: []
+user_id: inbasurya

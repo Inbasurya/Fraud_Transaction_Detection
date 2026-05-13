@@ -96,3 +96,8 @@ ml_models/
 !frontend/.env.production
 !frontend/.env.development
 !backend/.env.example
+venv/
+.env
+__pycache__/
+*.pyc
+node_modules/

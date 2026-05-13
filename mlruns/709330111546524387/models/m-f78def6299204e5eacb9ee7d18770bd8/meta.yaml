@@ -1,0 +1,10 @@
+artifact_location: file:///Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/mlruns/709330111546524387/models/m-f78def6299204e5eacb9ee7d18770bd8/artifacts
+creation_timestamp: 1776654099309
+experiment_id: '709330111546524387'
+last_updated_timestamp: 1776654101628
+model_id: m-f78def6299204e5eacb9ee7d18770bd8
+model_type: null
+name: model
+source_run_id: 3145f4753f3a4bea8de753b5f59c9d48
+status: 2
+status_message: null

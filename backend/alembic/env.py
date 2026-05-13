@@ -14,8 +14,11 @@ from alembic import context
 # Ensure the backend directory is in sys.path so `app.*` imports work
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-load_dotenv()
-
+env_path = Path(__file__).resolve().parents[2] / ".env"
+if env_path.exists():
+    load_dotenv(env_path, override=True)
+else:
+    load_dotenv()
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

@@ -49,18 +49,18 @@ def upgrade() -> None:
     # customers table
     op.create_table(
         "customers",
-        sa.Column("id", sa.String(40), primary_key=True),
-        sa.Column("segment", sa.String(30)),
-        sa.Column("home_city", sa.String(50)),
-        sa.Column("avg_txn_amount", sa.Numeric(12, 2)),
-        sa.Column("monthly_txn_count", sa.Integer),
-        sa.Column("risk_tier", sa.String(10), server_default="low"),
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("customer_id", sa.String(40), nullable=False, unique=True, index=True),
+        sa.Column("name", sa.String(200), nullable=False),
+        sa.Column("email", sa.String(120), nullable=False, unique=True, index=True),
+        sa.Column("phone", sa.String(20)),
+        sa.Column("home_location", sa.String(50)),
+        sa.Column("avg_transaction_amount", sa.Numeric(12, 2), server_default="0.0"),
+        sa.Column("avg_daily_transactions", sa.Numeric(12, 2), server_default="0.0"),
         sa.Column("total_transactions", sa.Integer, server_default="0"),
-        sa.Column("fraud_count", sa.Integer, server_default="0"),
-        sa.Column("last_seen_at", sa.DateTime(timezone=True)),
-        sa.Column("registered_devices", JSONB),
-        sa.Column("behavioral_profile", JSONB),
+        sa.Column("risk_level", sa.String(10), server_default="LOW"),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )
 
 
@@ -97,8 +97,23 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )
 
+    # devices table
+    op.create_table(
+        "devices",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("device_id", sa.String(255), nullable=False, unique=True, index=True),
+        sa.Column("customer_id", sa.String(40), sa.ForeignKey("customers.customer_id"), nullable=False, index=True),
+        sa.Column("device_type", sa.String(50)),
+        sa.Column("browser", sa.String(50)),
+        sa.Column("operating_system", sa.String(50)),
+        sa.Column("ip_address", sa.String(45)),
+        sa.Column("first_seen", sa.DateTime(timezone=True), server_default=sa.func.now()),
+        sa.Column("last_used", sa.DateTime(timezone=True), server_default=sa.func.now()),
+    )
+
 
 def downgrade() -> None:
+    op.drop_table("devices")
     op.drop_table("audit_log")
     op.drop_table("alerts")
     op.drop_table("customers")

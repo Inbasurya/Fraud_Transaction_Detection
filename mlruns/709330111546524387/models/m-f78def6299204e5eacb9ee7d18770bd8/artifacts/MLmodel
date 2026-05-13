@@ -1,0 +1,22 @@
+artifact_path: file:///Users/inbasurya/Documents/AI_POWERD_FRAUD_TRANSACTION/fraud-detection-system/mlruns/709330111546524387/models/m-f78def6299204e5eacb9ee7d18770bd8/artifacts
+flavors:
+  python_function:
+    data: model.xgb
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.9.6
+  xgboost:
+    code: null
+    data: model.xgb
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: xgb
+    xgb_version: 2.0.3
+mlflow_version: 3.1.4
+model_id: m-f78def6299204e5eacb9ee7d18770bd8
+model_size_bytes: 52500
+model_uuid: m-f78def6299204e5eacb9ee7d18770bd8
+prompts: null
+run_id: 3145f4753f3a4bea8de753b5f59c9d48
+utc_time_created: '2026-04-20 03:01:39.331779'

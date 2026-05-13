@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # ── Load .env at import time ──
 def _load_env():
-    env_paths = [Path(__file__).parent.parent / ".env", Path(".env"), Path("backend/.env")]
+    env_paths = [Path(__file__).parent.parent.parent / ".env", Path(__file__).parent.parent / ".env", Path(".env")]
     for path in env_paths:
         if path.exists():
             load_dotenv(path, override=True)
